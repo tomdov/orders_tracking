@@ -123,12 +123,6 @@ describe UsersController do
       response.should have_selector('div.pagination')
     end
 
-    it "should display the microposts count" do
-      10.times { FactoryGirl.create(:micropost, :user => @user, :content => "foo") }
-      get :show, :id => @user
-      response.should have_selector('td.sidebar', :content => @user.microposts.count.to_s)
-    end
-
     describe "when singed in as another user" do
       it " should be successful" do
         test_sign_in(FactoryGirl.create(:user, :email => FactoryGirl.generate(:email)))
@@ -382,21 +376,6 @@ describe UsersController do
 
     end
   end
-
-  describe "follow pages" do
-    describe "when not singed in" do
-      it "should protect 'following'" do
-        get :following, :id => 1
-        response.should redirect_to(signin_path)
-      end
-
-      it "should protect 'followers'" do
-        get :followers, :id => 1
-        response.should redirect_to(signin_path)
-      end
-    end
-  end
-
 
   describe "Content" do
     describe "Microsposts" do
