@@ -127,13 +127,24 @@ describe UsersController do
         test_sign_in(@user)
         @attr = {:description => "example desc", :site => "Ebay", :purchase_date => Date.current, :status => "Ordered",
                  :status_date => Date.current, :notes => "Bla bla bla"}
-        order1 = @user.orders.create!(@attr)
+        @order1 = @user.orders.create!(@attr)
       end
 
-      it "should contain the order" do``
+      it "should contain the order" do
       get :show, :id => @user
         response.should have_selector('span', :content => @attr[:description])
       end
+
+      it "should show delete link" do
+        get :show, :id => @user
+        response.should have_selector('a', :href => order_path(@order1), :content => "Delete")
+      end
+
+      it "should show edit link" do
+        get :show, :id => @user
+        response.should have_selector('a', :href => edit_order_path(@order1), :content => "Edit")
+      end
+
     end
 
   end

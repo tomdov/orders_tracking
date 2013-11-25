@@ -9,6 +9,11 @@ describe OrdersController do
       response.should be_success
     end
 
+    it "should have the right title" do
+      get :new
+      response.should have_selector('title', :content => "New order")
+    end
+
   end
 
   describe "post 'create'" do
@@ -68,6 +73,38 @@ describe OrdersController do
     end
 
   end
+
+  describe "delete 'destroy'" do
+    before(:each) do
+      @attr = {:description => "example desc", :site => "Ebay", :purchase_date => Date.current, :status => "Ordered",
+               :status_date => Date.current, :notes => "Bla bla bla"}
+      @user = test_sign_in(FactoryGirl.create(:user))
+      @order = @user.orders.create(@attr)
+    end
+
+    it "should delete the order" do
+      lambda do
+        delete :destroy, :id => @order
+      end.should change(Order, :count).by(-1)
+    end
+
+  end
+
+  describe "post 'edit'" do
+    before(:each) do
+      @attr = {:description => "example desc", :site => "Ebay", :purchase_date => Date.current, :status => "Ordered",
+               :status_date => Date.current, :notes => "Bla bla bla"}
+      @user = test_sign_in(FactoryGirl.create(:user))
+      @order = @user.orders.create(@attr)
+    end
+
+    it "should have the right title" do
+      get :edit, :id => @order
+      response.should have_selector('title', :content => "Edit order")
+    end
+  end
+
+
 
 
 

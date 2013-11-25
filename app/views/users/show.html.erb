@@ -12,6 +12,7 @@
     <td class="sidebar round">
       <strong>Name</strong> <%= @user.name %><br />
       <strong>URL</strong> <%= link_to user_path(@user), @user %><br />
+      <%= render 'shared/user_order_stats', :user => @user %>
     </td>
   </tr>
 

@@ -2,31 +2,7 @@
 
 <%= form_for(@order) do |f| %>
 
-    <%= render 'shared/error_messages', :object => f.object %>
-    <div class="field">
-      <%= f.label :description %><br />
-      <%= f.text_field :description %>
-    </div>
-
-    <div class="field">
-      <%= f.label :site, 'Site\Link' %><br />
-      <%= f.text_field :site %>
-    </div>
-
-    <div class="field">
-      <%= f.label :price %><br />
-      <%= f.text_field :price %>
-    </div>
-
-    <div class="field">
-      <%= f.label :purchase_date, 'Purchase Date' %><br />
-      <%= f.date_select :purchase_date %>
-    </div>
-
-    <div class="field">
-      <%= f.label :notes %><br />
-      <%= f.text_field :notes %>
-    </div>
+    <%= render 'orders/order_basic_details', :f => f %>
 
     <div class="field">
       <%= f.submit "Submit order" %><br />

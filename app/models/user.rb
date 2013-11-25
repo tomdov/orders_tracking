@@ -38,6 +38,11 @@ class User < ActiveRecord::Base
     encrypted_password == encrypt(submitted_password)
   end
 
+  def is_admin?
+    found_user = User.find(id)
+    found_user.admin unless found_user.nil?
+  end
+
   def feed
     User.find_by_id(id).orders
   end

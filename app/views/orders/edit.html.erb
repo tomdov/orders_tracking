@@ -1,0 +1,21 @@
+<h1>Edit Order</h1>
+
+<%= form_for(@order) do |f| %>
+
+    <%= render 'orders/order_basic_details', :f => f %>
+
+    <div class="field">
+      <%= f.label :status %><br />
+      <%= f.text_field :status %>
+    </div>
+
+    <div class="field">
+      <%= f.label :status_date, 'Status relevant to Date' %><br />
+      <%= f.date_select :status_date %>
+    </div>
+
+    <div class="field">
+      <%= f.submit "Update order" %><br />
+    </div>
+
+<% end %>

@@ -20,11 +20,42 @@ class OrdersController < ApplicationController
         render 'new'
       end
     else
-      render 'new'
+      redirect_to root_path
     end
   end
 
   def destroy
-
+    if signed_in?
+      @order = Order.find(params[:id])
+      @order.destroy
+      redirect_to user_path(current_user)
+    else
+      redirect_to root_path
+    end
   end
+
+  def edit
+    if signed_in?
+      @order = Order.find(params[:id])
+      @title = "Edit order"
+    end
+  end
+
+  def update
+    if signed_in?
+      @order = Order.find(params[:id])
+      if @order.update_attributes(params[:order])
+        flash[:success] = "Order saved successfuly"
+        redirect_to user_path(current_user)
+      else
+        flash[:error] = "Error in order saving"
+        @title = "Edit order"
+        render 'edit'
+      end
+
+    else
+      redirect_to root_path
+    end
+  end
+
 end
