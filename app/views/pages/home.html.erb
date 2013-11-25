@@ -4,8 +4,13 @@
       <tr>
         <td class="main">
           <h1 class="micropost">What's UPPP?</h1>
-          <%= render 'shared/microposts_form' %>
-          <%= render 'shared/feed' %>
+          <%= link_to "New order..", 'orders/new'%>
+          <% if @user.orders.any? %>
+              <table class="orders" summary="User orders">
+                <%= render @orders %>
+              </table>
+              <%= will_paginate @orders %>
+          <% end %>
         </td>
         <td class="sidebar round">
           <%= render 'shared/user_info' %>

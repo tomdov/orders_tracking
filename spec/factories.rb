@@ -21,3 +21,12 @@ FactoryGirl.define do
     association :user
   end
 end
+
+FactoryGirl.define do
+  factory :order do
+    description "Order"
+    site        "Buy4Me"
+    status      "Ordered"
+    association :user
+  end
+end

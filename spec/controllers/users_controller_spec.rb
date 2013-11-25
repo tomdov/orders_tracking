@@ -109,16 +109,8 @@ describe UsersController do
                                             :href => user_path(@user))
     end
 
-    it "should show the user's microposts" do
-      mp1  = FactoryGirl.create(:micropost, :user => @user, :content => "111")
-      mp2  = FactoryGirl.create(:micropost, :user => @user, :content => "Haha")
-      get :show, :id => @user
-      response.should have_selector('span.content', :content => mp1.content)
-      response.should have_selector('span.content', :content => mp2.content)
-    end
-
     it "should paginate" do
-      35.times { FactoryGirl.create(:micropost, :user => @user, :content => "foo") }
+      35.times { FactoryGirl.create(:order, :user => @user) }
       get :show, :id => @user
       response.should have_selector('div.pagination')
     end
@@ -128,6 +120,22 @@ describe UsersController do
         test_sign_in(FactoryGirl.create(:user, :email => FactoryGirl.generate(:email)))
       end
     end
+
+    describe "User orders" do
+
+      before(:each) do
+        test_sign_in(@user)
+        @attr = {:description => "example desc", :site => "Ebay", :purchase_date => Date.current, :status => "Ordered",
+                 :status_date => Date.current, :notes => "Bla bla bla"}
+        order1 = @user.orders.create!(@attr)
+      end
+
+      it "should contain the order" do``
+      get :show, :id => @user
+        response.should have_selector('span', :content => @attr[:description])
+      end
+    end
+
   end
   describe "GET 'new'" do
     it "returns http success" do
@@ -377,19 +385,5 @@ describe UsersController do
     end
   end
 
-  describe "Content" do
-    describe "Microsposts" do
-      before(:each) do
-        @user = test_sign_in(FactoryGirl.create(:user))
-        @mp1  = FactoryGirl.create(:micropost, :user => @user, :created_at => 1.day.ago)
-      end
-
-      it "should have a delete link" do
-        get :show, :id => @user
-        response.should have_selector('a', :href => "/microposts/#{@mp1.id}",
-                                      :content => "Delete")
-      end
-    end
-  end
 
 end

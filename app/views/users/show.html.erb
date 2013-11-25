@@ -6,11 +6,12 @@
         <%= @user.name %>
       </h1>
 
-      <% if @user.microposts.any? %>
-      <table class="microposts" summary="User microposts">
-        <%= render @microposts %>
+      <%= link_to "New order..", 'orders/new'%>
+      <% if @user.orders.any? %>
+      <table class="orders" summary="User orders">
+        <%= render @orders %>
       </table>
-          <%= will_paginate @microposts %>
+          <%= will_paginate @orders %>
       <% end %>
     </td>
 

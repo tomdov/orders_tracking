@@ -157,32 +157,22 @@ describe User do
     end
   end
 
-  describe 'micropost associations' do
+  describe 'orders associations' do
 
     before(:each) do
       @user = User.create(@attr)
       @diff_user = User.create(@attr.merge(:email => "diff@exmaple.com"))
-      @mp1  = FactoryGirl.create(:micropost, :user => @user, :created_at => 1.day.ago)
-      @mp2  = FactoryGirl.create(:micropost, :user => @user, :created_at => 1.hour.ago)
-      @mp3  = FactoryGirl.create(:micropost, :user => @diff_user, :created_at => 1.hour.ago)
+      @order1  = FactoryGirl.create(:order, :user => @user, :created_at => 1.day.ago)
+      @order2  = FactoryGirl.create(:order, :user => @user, :created_at => 1.hour.ago)
+      @order3  = FactoryGirl.create(:order, :user => @diff_user, :created_at => 1.hour.ago)
     end
 
     it 'should have a microposts attr' do
-      @user.should respond_to(:microposts)
+      @user.should respond_to(:orders)
     end
 
-    it 'should have the right microposts in the right order' do
-      @user.microposts.should == [@mp2, @mp1]
-    end
-
-    it 'should destroy the associated microposts' do
-      @user.destroy
-      [@mp1, @mp2].each do |micropost|
-        lambda do
-          Micropost.find(micropost.id)
-        end.should raise_error(ActiveRecord::RecordNotFound)
-        ##Micropost.find_by_id(micropost.id).should be_nil
-      end
+    it 'should have the right orders in the right order' do
+      @user.orders.should == [@order2, @order1]
     end
 
     describe "status feed" do
@@ -191,61 +181,15 @@ describe User do
       end
 
       it "should include the user's microposts" do
-        @user.feed.should include(@mp1)
-        @user.feed.should include(@mp2)
+        @user.feed.should include(@order1)
+        @user.feed.should include(@order2)
       end
 
       it "shouldn't include a different user's microposts" do
-        @user.feed.should_not include(@mp3)
+        @user.feed.should_not include(@order3)
       end
     end
   end
 
-  describe "relationships" do
-    before(:each) do
-      @user = User.create!(@attr)
-      @followed = FactoryGirl.create(:user)
-    end
 
-    it "should have a relationships method" do
-      @user.should respond_to(:relationships)
-    end
-
-    it "should have a following method" do
-      @user.should respond_to(:following)
-    end
-
-    it "should follow another user" do
-      @user.follow!(@followed)
-      @user.should be_following(@followed)
-    end
-
-    it "should include the followed user in the following array" do
-      @user.follow!(@followed)
-      @user.following.should include(@followed)
-    end
-
-    it "should have an unfollow! method" do
-      @user.should respond_to(:unfollow!)
-    end
-
-    it "should unfollow a user" do
-      @user.follow!(@followed)
-      @user.unfollow!(@followed)
-      @user.should_not be_following(@followed)
-    end
-
-    it "should have a rev_relationships method" do
-      @user.should respond_to(:rev_relationships)
-    end
-
-    it "should have a followers method" do
-      @user.should respond_to(:followers)
-    end
-
-    it "should include the follower in the followers array" do
-      @user.follow!(@followed)
-      @followed.followers.should include(@user)
-    end
-  end
 end

@@ -19,6 +19,8 @@ class User < ActiveRecord::Base
 
   has_many :microposts, :dependent => :destroy
 
+  has_many :orders,     :dependent => :destroy
+
   validates :name,  :presence => true,
             :length => { :maximum => 50 }
 
@@ -37,7 +39,7 @@ class User < ActiveRecord::Base
   end
 
   def feed
-    Micropost.from_users_followed_by(self)
+    User.find_by_id(id).orders
   end
 
   def User.authenticate(email, password)
