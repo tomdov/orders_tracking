@@ -12,7 +12,7 @@ class UsersController < ApplicationController
   def show
     @user = User.find_by_id(params[:id])
     @title = @user.name
-    @orders = @user.orders.paginate(:page => params[:page])
+    @feed_items = @user.orders.paginate(:page => params[:page])
   end
 
   def new

@@ -2,9 +2,10 @@ class PagesController < ApplicationController
   def home
     @title = "Home"
     if signed_in?
-      @feed_items = current_user.feed#.paginate(:page => params[:page])
       @user = current_user
-      @orders = @user.orders.paginate(:page => params[:page])
+      @feed_items = @user.orders.paginate(:page => params[:page])
+    else
+      @feed_items = []
     end
   end
 

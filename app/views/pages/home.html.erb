@@ -3,14 +3,8 @@
     <table class="front" summary="For signed-in users">
       <tr>
         <td class="main">
-          <h1 class="micropost">What's UPPP?</h1>
-          <%= link_to "New order..", 'orders/new'%>
-          <% if @user.orders.any? %>
-              <table class="orders" summary="User orders">
-                <%= render @orders %>
-              </table>
-              <%= will_paginate @orders %>
-          <% end %>
+          <h1 class="order">Orders Orders...</h1>
+          <%= render 'shared/feed' %>
         </td>
         <td class="sidebar round">
           <%= render 'shared/user_info' %>

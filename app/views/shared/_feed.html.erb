@@ -1,5 +1,6 @@
+<%= link_to "New order..", 'orders/new'%>
 <% if @feed_items.any? %>
-    <table class="microposts" summery="Status feed">
+    <table class="orders" summery="Status feed">
       <%= render :partial => 'shared/feed_item', :collection => @feed_items %>
     </table>
 

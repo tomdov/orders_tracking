@@ -6,13 +6,7 @@
         <%= @user.name %>
       </h1>
 
-      <%= link_to "New order..", 'orders/new'%>
-      <% if @user.orders.any? %>
-      <table class="orders" summary="User orders">
-        <%= render @orders %>
-      </table>
-          <%= will_paginate @orders %>
-      <% end %>
+      <%= render 'shared/feed' %>
     </td>
 
     <td class="sidebar round">

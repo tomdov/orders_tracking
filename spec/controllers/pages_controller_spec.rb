@@ -31,7 +31,20 @@ describe PagesController do
       before(:each) do
         @user = test_sign_in(FactoryGirl.create(:user))
         other_user = FactoryGirl.create(:user, :email => FactoryGirl.generate(:email))
-        other_user.follow!(@user)
+      end
+
+      describe "User orders" do
+
+        before(:each) do
+          @attr = {:description => "example desc", :site => "Ebay", :purchase_date => Date.current, :status => "Ordered",
+                   :status_date => Date.current, :notes => "Bla bla bla"}
+          @user.orders.create!(@attr)
+        end
+
+        it "should contain the order" do
+          get 'home'
+          response.should have_selector('span', :content => @attr[:description])
+        end
       end
     end
   end
