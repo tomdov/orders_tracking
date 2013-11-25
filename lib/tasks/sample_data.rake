@@ -5,8 +5,7 @@ namespace :db do
   task :populate => :environment do
     Rake::Task['db:reset'].invoke
     make_users
-    make_microposts
-    make_relationships
+    make_orders
   end
 end
 
@@ -23,20 +22,15 @@ def make_users
     end
 end
 
-def make_microposts
+def make_orders
     User.all(:limit => 6).each do |user|
       50.times do
-        user.microposts.create!(:content => Faker::Lorem.sentence(5))
+        user.orders.create!(:description   => Faker::Lorem.sentence(1),
+                            :site          => Faker::Lorem.sentence(1),
+                            :purchase_date => Date.current,
+                            :status        => "Ordered",
+                            :status_date   => Date.current,
+                            :notes         => Faker::Lorem.sentence(3))
       end
     end
-end
-
-def make_relationships
-  users = User.all
-  user = users.first
-  following = users[1..50] #0 index arrays
-  followers = users[3..40]
-  following.each { |followed| user.follow!(followed) }
-  followers.each { |follower| follower.follow!(user) }
-
 end

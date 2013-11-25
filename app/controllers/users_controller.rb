@@ -4,34 +4,30 @@ class UsersController < ApplicationController
   before_filter :admin_only,   :only => :destroy
 
   def index
-    @users = User.paginate(:page => params[:page])
-    @user  = current_user
-    @title = "All users"
+    if !current_user.admin?
+      render 'public/404'
+    else
+      @users = User.paginate(:page => params[:page])
+      @user  = current_user
+      @title = "All users"
+    end
 
   end
   def show
-    @user = User.find_by_id(params[:id])
+
+    @user = current_user
     @title = @user.name
     @feed_items = @user.orders.paginate(:page => params[:page])
+    if current_user != User.find(params[:id])
+        flash.now[:error] = "Access denied"
+        render 'show'
+    end
+
   end
 
   def new
     @user = User.new
     @title = "Sign Up"
-  end
-
-  def following
-    @title = "Following"
-    @user = User.find(params[:id])
-    @users = @user.following.paginate(:page => params[:page])
-    render 'show_follow'
-  end
-
-  def followers
-    @title = "Followers"
-    @user = User.find(params[:id])
-    @users = @user.followers.paginate(:page => params[:page])
-    render 'show_follow'
   end
 
   def create

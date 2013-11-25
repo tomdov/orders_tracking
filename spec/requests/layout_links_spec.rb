@@ -82,10 +82,23 @@ describe "LayoutLinks" do
                                           :content => 'Settings')
     end
 
-    it 'should have a users link' do
-      visit root_path
-      response.should have_selector('a', :href => users_path,
-                                    :content => 'Users')
+    describe "admin user" do
+
+      it 'should have a users link' do
+        @user.toggle!(:admin)
+        visit root_path
+        response.should have_selector('a', :href => users_path,
+                                      :content => 'Users')
+      end
+    end
+
+    describe "non-admin user" do
+      it 'should not have a users link' do
+        visit root_path
+        response.should_not have_selector('a', :href => users_path,
+                                      :content => 'Users')
+
+      end
     end
   end
 end

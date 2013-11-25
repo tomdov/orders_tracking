@@ -6,7 +6,7 @@
 
     <div class="field">
       <%= f.label :status %><br />
-      <%= f.text_field :status %>
+      <%= f.select :status, options_for_select(%w[Ordered Shipped Delivered Picked]) %>
     </div>
 
     <div class="field">

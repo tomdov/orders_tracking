@@ -16,6 +16,7 @@ describe UsersController do
 
       before(:each) do
         @user = test_sign_in(FactoryGirl.create(:user))
+
         FactoryGirl.create(:user, :email => "user@example.com")
         FactoryGirl.create(:user, :email => "user@example.net")
 
@@ -24,48 +25,56 @@ describe UsersController do
 
         end
       end
-      it 'should be successful' do
-        get :index
-        response.should be_success
+
+      describe "for admin users" do
+        before(:each) do
+          @user.toggle!(:admin)
+        end
+
+        it 'should be successful' do
+          get :index
+          response.should be_success
+        end
+
+        it 'should have the right title' do
+          get :index
+          response.should have_selector('title', :content => "All users")
+        end
+
+        it 'should have an element for each user' do
+          get :index
+          User.paginate(:page => 1).each do |user|
+            response.should have_selector('li', :content => @user.name)
+          end
+        end
+
+        it 'should paginate users' do
+          get :index
+          response.should have_selector('div.pagination')
+          response.should have_selector('span.disabled', :content => 'Previous')
+          response.should have_selector('a', :href => "/users?page=2",
+                                             :content => "2")
+          response.should have_selector('a', :href => "/users?page=2",
+                                             :content => "Next")
+        end
+
+        it 'should have a delete link for admins' do
+
+          other_user = User.all.second
+          get :index
+          response.should have_selector('a', :href => user_path(other_user),
+                                        :content => "Delete")
+        end
+
       end
 
-      it 'should have the right title' do
-        get :index
-        response.should have_selector('title', :content => "All users")
-      end
+      describe "for non-admin users" do
 
-      it 'should have an element for each user' do
-        get :index
-        User.paginate(:page => 1).each do |user|
-          response.should have_selector('li', :content => @user.name)
+        it 'should not be able to access index' do
+          get :index
+          response.should have_selector('div.page_not_found', :content => "The page you were looking for doesn't exist.")
         end
       end
-
-      it 'should paginate users' do
-        get :index
-        response.should have_selector('div.pagination')
-        response.should have_selector('span.disabled', :content => 'Previous')
-        response.should have_selector('a', :href => "/users?page=2",
-                                           :content => "2")
-        response.should have_selector('a', :href => "/users?page=2",
-                                           :content => "Next")
-      end
-
-      it 'should have a delete link for admins' do
-        @user.toggle!(:admin)
-        other_user = User.all.second
-        get :index
-        response.should have_selector('a', :href => user_path(other_user),
-                                      :content => "Delete")
-      end
-
-      it 'should not have a delete link for non-admins' do
-        other_user = User.all.second
-        get :index
-        response.should_not have_selector('a', :href => user_path(other_user),
-                                      :content => "Delete")
-      end
-
 
     end
 
@@ -75,7 +84,8 @@ describe UsersController do
 
     before(:each) do
       @user = FactoryGirl.create(:user)
-      @base_title = "Ruby on Rails Tutorial Sample App"
+      test_sign_in(@user)
+      @base_title = "Order Tracking"
     end
 
     it "should be successful" do
@@ -119,30 +129,79 @@ describe UsersController do
       it " should be successful" do
         test_sign_in(FactoryGirl.create(:user, :email => FactoryGirl.generate(:email)))
       end
+
+      it "should not be able to see other user's orders" do
+        other_user = FactoryGirl.create(:user, :email => FactoryGirl.generate(:email))
+        get :show, :id => other_user
+        flash[:error].should =~ /access denied/i
+      end
     end
 
     describe "User orders" do
 
       before(:each) do
         test_sign_in(@user)
-        @attr = {:description => "example desc", :site => "Ebay", :purchase_date => Date.current, :status => "Ordered",
-                 :status_date => Date.current, :notes => "Bla bla bla"}
-        @order1 = @user.orders.create!(@attr)
+        @attr = {:description           => "example desc",
+                 :site                  => "Ebay",
+                 :purchase_date         => Date.current,
+                 :status                => "Ordered",
+                 :status_date           => Date.current,
+                 :notes                 => "Bla bla bla"}
+
       end
 
       it "should contain the order" do
-      get :show, :id => @user
+        @user.orders.create!(@attr)
+        get :show, :id => @user
         response.should have_selector('span', :content => @attr[:description])
       end
 
       it "should show delete link" do
+        order1 = @user.orders.create!(@attr)
         get :show, :id => @user
-        response.should have_selector('a', :href => order_path(@order1), :content => "Delete")
+        response.should have_selector('a', :href => order_path(order1), :content => "Delete")
       end
 
       it "should show edit link" do
+        order1 = @user.orders.create!(@attr)
         get :show, :id => @user
-        response.should have_selector('a', :href => edit_order_path(@order1), :content => "Edit")
+        response.should have_selector('a', :href => edit_order_path(order1), :content => "Edit")
+      end
+
+      describe "days display" do
+
+        describe "purchase date" do
+
+          it "should display the correct days ago" do
+            @user.orders.create!(@attr.merge(:purchase_date => 1.days.ago))
+            get :show, :id => @user
+            response.should have_selector('span.purchase_date', :content => "1 day ago")
+          end
+
+          it "should display the correct days ahead" do
+            @user.orders.create!(@attr.merge(:purchase_date => Date.tomorrow))
+            get :show, :id => @user
+            response.should have_selector('span.purchase_date', :content => "1 day ahead")
+          end
+
+        end
+
+        describe "status date" do
+
+          it "should display the correct days ago" do
+            @user.orders.create!(@attr.merge(:status_date => 1.days.ago))
+            get :show, :id => @user
+            response.should have_selector('span.status_date', :content => "1 day ago")
+          end
+
+          it "should display the correct days ahead" do
+
+            @user.orders.create!(@attr.merge(:status_date => Date.tomorrow))
+            get :show, :id => @user
+            response.should have_selector('span.status_date', :content => "1 day ahead")
+          end
+
+        end
       end
 
     end

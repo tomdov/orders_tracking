@@ -14,8 +14,9 @@
   <td class="order">
     <span class="purchase_date">
         <% if !(order.purchase_date.nil?) %>
-          <%= "#{order.purchase_date} (#{(Date.current - order.purchase_date).to_i} days ago)" %></span>
+          <%= "#{order.purchase_date} (#{pluralize(days_diff_abs(order.purchase_date, Date.current), "day")} #{days_diff_ago_or_ahead(order.purchase_date, Date.current)})" %>
         <% end %>
+    </span>
   </td>
 
   <td class="order">
@@ -25,7 +26,7 @@
   <td class="order">
     <span class="status_date">
       <% if !(order.status_date.nil?) %>
-          <%= "(#{(Date.current - order.status_date).to_i} days ago)" %>
+          <%= "#{order.status_date} (#{pluralize(days_diff_abs(order.status_date, Date.current), "day")} #{days_diff_ago_or_ahead(order.status_date, Date.current)})" %>
       <% end %>
     </span>
   </td>

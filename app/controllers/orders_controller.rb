@@ -36,8 +36,9 @@ class OrdersController < ApplicationController
 
   def edit
     if signed_in?
-      @order = Order.find(params[:id])
       @title = "Edit order"
+      @order = Order.find(params[:id])
+
     end
   end
 

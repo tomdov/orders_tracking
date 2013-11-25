@@ -1,9 +1,19 @@
-<%= link_to "New order..", '../orders/new'%>
+<strong><%= link_to "New order..", '../orders/new'%></strong>
 <% if @feed_items.any? %>
+
     <table class="orders" summery="Status feed">
+      <%= render 'orders/order_titles' %>
       <%= render :partial => 'shared/feed_item', :collection => @feed_items %>
     </table>
 
     <%= will_paginate @feed_items %>
+
+<% else %>
+
+    <table class="empty_orders" summery="Status feed">
+      <td class="empty_order_message">
+        No orders yet.. Add some!
+      </td>
+    </table>
 
 <% end %>
