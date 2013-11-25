@@ -33,7 +33,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     if @user.save
-      flash[:success] = "Welcome to the Sample app"
+      flash[:success] = "Welcome to the Order Tracking"
       sign_in(@user)
       redirect_to @user # possible user_path(@user) also
     else
