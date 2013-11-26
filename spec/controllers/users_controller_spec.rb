@@ -204,6 +204,53 @@ describe UsersController do
         end
       end
 
+      describe "link/site display" do
+
+        before(:each) do
+          @max_site_without_truncate = 30
+        end
+
+        it "should display link with http or with link" do
+          @user.orders.create!(@attr.merge(:site => "http://www.site4example.com"))
+          get :show, :id => @user
+          response.should have_selector('span.site>a', :href => "http://www.site4example.com",
+                                                       :content => "http://www.site4example.com")
+        end
+
+        it "should display link with https or with link" do
+          @user.orders.create!(@attr.merge(:site => "https://www.site4example.com"))
+          get :show, :id => @user
+          response.should have_selector('span.site>a', :href => "https://www.site4example.com",
+                                        :content => "https://www.site4example.com")
+        end
+
+        it "should not display regular site with link" do
+          @user.orders.create!(@attr.merge(:site => "Ebay"))
+          get :show, :id => @user
+          response.should_not have_selector('span.site>a', :href => "Ebay",
+                                        :content => "Ebay")
+        end
+
+        it "should truncate the link if it's too long" do
+          @user.orders.create!(@attr.merge(:site => "http://#{"a" * (@max_site_without_truncate + 1 - "http://".length)}"))
+          get :show,  :id => @user
+          response.should have_selector('span.site>a', :content => "http://#{"a" * (@max_site_without_truncate - 3 - "http://".length)}...")
+        end
+
+        it "should not truncate the link if it's below limit" do
+          @user.orders.create!(@attr.merge(:site => "http://#{"a" * (@max_site_without_truncate - "http://".length)}"))
+          get :show,  :id => @user
+          response.should_not have_selector('span.site>a', :content => "http://#{"a" * (@max_site_without_truncate - 1 - "http://".length)}...")
+          response.should     have_selector('span.site>a', :content => "http://#{"a" * (@max_site_without_truncate - "http://".length)}")
+        end
+
+        it "should not truncate regular site" do
+          @user.orders.create!(@attr.merge(:site => "a" * (@max_site_without_truncate + 1)))
+          get :show,  :id => @user
+          response.should     have_selector('span.site', :content => "a" * (@max_site_without_truncate + 1))
+        end
+      end
+
     end
 
   end
@@ -265,7 +312,7 @@ describe UsersController do
 
       it 'should have a welcome message' do
         post :create, :user => @attr
-        flash[:success].should =~ /welcome to the sample app/i
+        flash[:success].should =~ /Welcome to the Order Tracking app/i
       end
 
       it 'should sign the user in' do

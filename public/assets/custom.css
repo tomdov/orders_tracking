@@ -1,5 +1,5 @@
 .container {
-    width: 70%;
+    width: 880px;
 }
 
 body {
@@ -97,7 +97,7 @@ a.signup_button {
 footer {
     text-align: center;
     margin-top: 10px;
-    width: 100%;
+    width: 810px;
     margin-left: auto;
     margin-right: auto;
 

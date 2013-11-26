@@ -21,4 +21,24 @@ module OrdersHelper
     end
   end
 
+  def is_link?(link)
+    #http:// or https://
+    (link.at(0..6) == "http://") or (link.at(0..7) == "https://")
+  end
+
+  def manipulate_site_if_neccesery(site)
+    max_site_length_without_truncating = 30
+    str = site
+    str = str.truncate(max_site_length_without_truncating) if is_link?(site)
+    return str
+  end
+
+  def create_site_for_view(site)
+    str = ""
+    str += "\<a href=#{site}\>" if is_link?(site)
+    str += manipulate_site_if_neccesery(site)
+    str += "</a>" if is_link?(site)
+    str.html_safe()
+  end
+
 end
