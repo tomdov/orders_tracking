@@ -33,6 +33,7 @@ describe PagesController do
         other_user = FactoryGirl.create(:user, :email => FactoryGirl.generate(:email))
       end
 
+
       describe "User orders" do
 
         before(:each) do

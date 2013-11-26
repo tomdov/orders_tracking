@@ -12,6 +12,20 @@ describe SessionsController do
       get :new
       response.should have_selector('title', :content => "Sign in")
     end
+
+    describe "When signed in" do
+      before(:each) do
+        @user = FactoryGirl.create(:user)
+        test_sign_in(@user)
+      end
+
+      it 'should redirect a signed in user to it\'s home page' do
+        get :new
+        flash[:error].should =~ /You're already signed-in../i
+        response.should redirect_to @user
+      end
+    end
+
   end
 
   describe ''"Post 'create'" do
