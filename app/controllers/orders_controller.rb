@@ -38,6 +38,10 @@ class OrdersController < ApplicationController
     if signed_in?
       @title = "Edit order"
       @order = Order.find(params[:id])
+      if (@order.user != current_user)
+        flash[:error] = "Access denied"
+        redirect_to current_user
+      end
 
     end
   end

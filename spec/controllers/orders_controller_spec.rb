@@ -108,7 +108,8 @@ describe OrdersController do
                :status_date   => Date.current,
                :notes         => "Bla bla bla"}
       @user = test_sign_in(FactoryGirl.create(:user))
-      @order = @user.orders.create(@attr)
+      @other_user = FactoryGirl.create(:user, :email => FactoryGirl.generate(:email))
+      @order = @user.orders.create(@attr.merge(:site => "Alibaba"))
     end
 
     it "should be successful" do
@@ -119,6 +120,14 @@ describe OrdersController do
     it "should have the right title" do
       get :edit, :id => @order.id
       response.should have_selector('title', :content => "Edit order")
+    end
+
+    it "should not be available for user to edit another user's order" do
+      other_order = @other_user.orders.create(@attr)
+      get :edit, :id => other_order.id
+      response.should redirect_to @user
+      flash[:error].should =~ /access denied/i
+
     end
   end
 
